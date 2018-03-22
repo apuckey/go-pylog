@@ -156,7 +156,7 @@ func (l *ScribeLogger) Emit(ctx *logging.MessageContext, message string, args ..
 	if l.enabled {
 		// format the message - we remove the level because scribe already sends them to different pipelines
 		// plus we add the timestamp which the default logger already has
-		str := l.formatter.Format(ctx, message, args...)
+		str := fmt.Sprintf("%s%s", l.formatter.Format(ctx, message, args...), "\n")
 
 		if l.secondaryOutput != nil {
 			fmt.Fprintln(l.secondaryOutput, str)
