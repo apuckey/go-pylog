@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dvirsky/go-pylog/logging"
+	"github.com/apuckey/go-pylog/logging"
 	"github.com/samuel/go-thrift/examples/scribe"
 	"github.com/samuel/go-thrift/thrift"
 	//"io"
@@ -157,7 +157,6 @@ func (l *ScribeLogger) Emit(ctx *logging.MessageContext, message string, args ..
 		// format the message - we remove the level because scribe already sends them to different pipelines
 		// plus we add the timestamp which the default logger already has
 		str := l.formatter.Format(ctx, message, args...)
-		category := fmt.Sprintf("%s.%s", l.category, ctx.Level)
 
 		if l.secondaryOutput != nil {
 			fmt.Fprintln(l.secondaryOutput, str)
@@ -168,7 +167,7 @@ func (l *ScribeLogger) Emit(ctx *logging.MessageContext, message string, args ..
 
 			//try sending, aborting immediately if the buffer is full
 			select {
-			case l.channel <- &scribe.LogEntry{category, str}:
+			case l.channel <- &scribe.LogEntry{l.category, str}:
 				break
 			default: //could not send
 
